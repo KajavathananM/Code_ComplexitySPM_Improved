@@ -1,0 +1,12 @@
+class Increments
+{
+  public static void main(String arg[]) {
+        int a = 5;
+        int b = 2;
+        int c;
+        int d;
+        c = ++b; 
+        d = a++; 
+        c++; 
+    } 
+}

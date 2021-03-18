@@ -15,6 +15,7 @@ class Reversed_BarChart extends Component {
 
         this.state = {
             Cs: props.Cs,
+            Cr:props.Cr,
             Ctc: props.Ctc,
             Cnc: props.Cnc,
             Ci: props.Ci
@@ -31,6 +32,7 @@ class Reversed_BarChart extends Component {
                 "Complexity_By_Type": this.state.Ctc[i],
                 "Complexity_By_Nested": this.state.Cnc[i],
                 "Complexity_By_Size": this.state.Cs[i],
+                "Complexity_By_Recursion": this.state.Cr[i],
                 "Complexity_By_Inheritence": this.state.Ci[i]
             }
             tempArr.push(lineData);
@@ -87,6 +89,15 @@ class Reversed_BarChart extends Component {
         series4.bullets.push(new am4charts.CircleBullet());
         series4.tooltipText = "Complexity Value by {name} in {categoryX}: {valueY}";
         series4.legendSettings.valueText = "{valueY}";
+
+        let series5 = chart.series.push(new am4charts.LineSeries());
+        series5.dataFields.valueY = "Complexity_By_Recursion";
+        series5.dataFields.categoryX = "line";
+        series5.name = 'Complexity By Recursion';
+        series5.strokeWidth = 3;
+        series5.bullets.push(new am4charts.CircleBullet());
+        series5.tooltipText = "Complexity Value by {name} in {categoryX}: {valueY}";
+        series5.legendSettings.valueText = "{valueY}";
 
         // Add chart cursor
         chart.cursor = new am4charts.XYCursor();

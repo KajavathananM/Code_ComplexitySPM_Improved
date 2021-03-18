@@ -1,142 +1,406 @@
-/*This program file is used to measure complexity of line code due to size*/
+const identifyRecursion = require('./ComplexityByRecursion').method1;
+const complexityByRecursion= require('./ComplexityByRecursion').method2
+const initializeRecursionArray= require('./ComplexityByRecursion').method3
 
-var ctc_arr = [];
+
 var count;
+var mCount;
+var start,end;
 
-var sKeywords = ["new", "delete", "throw", "throws"]
-var arithmetic = ["+", "-", "*", "/", "%", "++", "--"];
-var relation = ["==", "!=", ">", "<", ">=", "<="];
-var logical = ["&&", "||", "!"];
-var bitwise = ["|", "^", "~", "<<", ">>", ">>>", "<<<"];
-var misc = [",", "->", ".", "::"];
-var assignment = ["+=", "-=", "*=", "/=", "=", ">>>=", "|=", "&=", "%=", "<<=", ">>=", "^="];
-var keywords = ["void", "double", "int", "float", "String",
-    "printf", "println", "cout", "cin", "if", "for", "while", "do while", "switch", "case"
-];
-var manipulators = ["endl", "\n"]
 
-var countOOPConcepts = (line) => {
-    if (line.includes("class")) {
+var keywords=["void[\s]","double[^\s]","int[^\s]","float[^\s]","String[^\s]",
+    "(printf)","(println)","(cout)","(cin)","(if)","(for)","(while)","(do while)","(switch)","(case)"];
+
+
+
+//Start and end index to extract methods
+//Increase count  when iterating through elements in array by 1
+var increaseCountBy1 = (result) => {
+    for (elem of result) {
+        //console.log(result);
         count++;
-        return count;
     }
+}
+//Increase count due to arithmetic operators.Increase  count for each arithmetic operator by 1.
+var countAritmeticOp = (ch) => {
+    // console.log(ch);
+    var op = [];
+    for (var x = 0; x < ch.length; x++) {
+        if (ch[x] === '+' || ch[x] === '-' || ch[x] === '*' || ch[x] === '/') {
+            if (ch[x + 1] === '+' || ch[x + 1] === '/') {
+                op.push(ch[x] + ch[x + 1]);
+                x++;
+            } else {
+                op.push(ch[x]);
+            }
+        }
+    }
+    increaseCountBy1(op);
+}
+ //Increase count due to relational operators.Increase count for each relational operator by 1.
+var countRelationOp = (ch) => {
+    //console.log(ch);
+    var op = [];
+    for (var x = 0; x < ch.length; x++) {
+        if (ch[x] === '=' && ch[x + 1] === '=')
+            op.push(ch[x])
+        if (ch[x] === '>' || ch[x] === '<' || ch[x] === '!') {
+            if (ch[x + 1] === '=') {
+                op.push(ch[x] + ch[x + 1]);
+                x++;
+            } else {
+                // if (ch[x] === '!') {
+                //     countRelationOp(ch[x]);
+                //     x++;
+                // }
+                op.push(ch[x]);
+            }
+        }
+    }
+    increaseCountBy1(op);
+}
+//Increase count due to logical operators.Increase  count for each logical operator by 1.
+var countLogicalOp = (ch) => {
+   //console.log(ch);
+    //Increase count due to assignment operators
+    var op = [];
+    if (ch === '!')
+        op.push(ch);
     else {
-
-        for (index = 0; index < 5; index++) {
-            if (line.includes(keywords[index]) && line.includes("()")) {
-                if (line.includes("[]"))
-                    count++;
-                count++;
-
-            } else if (line.includes(keywords[index]) && line.includes("[]")) {
-                count++;
-
-            } else if (line.includes(keywords[index]) && !line.includes("[]") && !line.includes("()")) {
+        for (var x = 0; x < ch.length; x++) {
+            if (ch[x] === '&' && ch[x + 1] === '&' || ch[x] === '|' && ch[x + 1] === '|') {
                 count++;
             }
-
-
         }
-        return count
     }
-};
+    increaseCountBy1(op);
+}
+//Increase count due to bitwise operators.Increment count for each bitwise operator by 1
+var countBitwiseOp = (ch) => {
+    //console.log(ch);
+    var op = [];
+    if (ch === '|')
+        op.push(ch);
+    if (ch === '>>')
+        op.push(ch);
+    if (ch === '<<')
+        op.push(ch);
+    if (ch === '>>>')
+        op.push(ch);
+    if (ch === '<<<')
+        op.push(ch);
+    else {
+        for (var x = 0; x < ch.length; x++) {
+            if (ch[x] === '^' || ch[x] === '~') {
+                op.push(ch[x] + ch[x + 1])
+            }
+        }
+    }
+    increaseCountBy1(op);
+}
+//Increase count due to assignment operators.Increase for each assignment operator by 1
+var countAssignmentOp = (ch) => {
+    //console.log(ch);
+    //Increase count due to assignment operators.Increment each assignment operator by 1
+    var op = [];
+    for (var x = 0; x < ch.length; x++) {
+        if (ch[x] === '=' && ch[x + 1] !== '=')
+            op.push(ch[x])
+        if (ch[x] === '+' || ch[x] === '-' || ch[x] === '*' || ch[x] === '/' || ch[x] === '&' || ch[x] === '|' || ch[x] === '%') {
+            if (ch[x + 1] === '=') {
+                op.push(ch[x] + ch[x + 1]);
+                x++;
+            }
+        }
+        if (ch[x] === '>' && ch[x + 1] === '>' || ch[x] === '<' && ch[x + 1] === '<') {
+            if (ch[x + 2] === '=') {
+                op.push(ch[x] + ch[x + 1] + ch[x + 2]);
+                x++;
+            } else if (ch[x + 2] === '>') {
+                if (ch[x + 3] === '=') {
+                    op.push(ch[x] + ch[x + 1] + ch[x + 2] + ch[x + 3]);
+                    x++;
+                } else {
+                    var c = ch[x] + ch[x + 1]
+                    countBitwiseOp(c);
+                }
+            } else {
+                var c = ch[x] + ch[x + 1]
+                countBitwiseOp(c);
+            }
+        }
+    }
+    increaseCountBy1(op);
+}
+//Increase count due to keywords.Increment  count for each keyword by 1
+var countVariables = (line,lineArr) => {
+      var i=0;
+      while(i<5)
+      {
+        var regex = new RegExp(keywords[i],'g')
+        if(regex.test(line))
+        {   //console.log(line.match(regex).length)
+            if(line.match(regex).length>1){
+                count+=line.match(regex).length
+            }else if(line.match(regex).length==1){
+                //console.log(line.match(regex).length)
+                count++ 
+            } 
+        }
+        i++
+      }     
+    
+}
+// Check for Method Declarations in a program file
+var countMethodDefs = (line,lineArr,index) => {   
+        //Check for method definition if line contains method with <method>(<arguments>)
+        if((/String*[\s0-9]([A-Za-z0-9]*[A-Za-z0-9]*)*\(/g).test(line) && (/(\)[\s]*{)/g).test(line) )
+        {
+                findMethodDefs(lineArr,index);
+        }
+        else if((/double*[\s0-9]([A-Za-z0-9]*[A-Za-z0-9]*)*\(/g).test(line) && (/(\)[\s]*{)/g).test(line) )
+        {
+                    findMethodDefs(lineArr,index);
+        } 
+        else if((/float*[\s0-9]([A-Za-z0-9]*[A-Za-z0-9]*)*\(/g).test(line) && (/(\)[\s]*{)/g).test(line) )
+        {
+                    findMethodDefs(lineArr,index);
+        }
+        else if((/int*[\s0-9]([A-Za-z0-9]*[A-Za-z0-9]*)*\(/g).test(line) && (/(\)[\s]*{)/g).test(line) )
+        {
+                    findMethodDefs(lineArr,index);
+        }
+        else if((/void*[\s0-9]([A-Za-z0-9]*[A-Za-z0-9]*)*\(/g).test(line) && (/(\)[\s]*{)/g).test(line) )
+        {
+                    findMethodDefs(lineArr,index);
+        }              
+}
+var countKeywords = (line) => {
+    var i=6;
+    while(i>=5 && i<keywords.length)
+    {
+      var regex = new RegExp(keywords[i],'g')
+      if(regex.test(line))
+      {
+             count++
+            //  console.log(line)
+            //check if new line character in println function
+             if((/(println)/g).test(line)){
+                countBreakLineJava(line);
+             }
+      }
+      i++
+    }     
+}
+//Counts endline character \n in Java
+var countBreakLineJava = (line) => {
+    var regexStart1=/(.*?.*\\n\.*[\s]+)/g
+    var regexStart2=/(.*?.*\\n\.*[^\s]+)/g
+    var regexMid = /(.*?.n\.*[\s].*[^\s])/g
+    var regexEnd=/(.*?.n)/g
 
-var complexityBySize = function (lineArr) {
-    for (let i = 0; i < lineArr.length; i++) {
+    
+    if(regexStart1.test(line))
+    {
+        count++
+        // console.log("TEST1")
+    }
+    else if(regexStart2.test(line))
+    {
+        count++
+        // console.log("TEST2")
+    }
+    else if(regexMid.test(line))
+    {
+        count++
+        // console.log("TEST3")
+    }
+    else if(regexEnd.test(line))
+    {
+        count++
+        // console.log("TEST4")
+    }
+}
+//Increase count due to special keywords.Increment  count for each keyword by 2
+var countSpecKeywords=(line)=>{
+    var regSpecKeywords=null;    
+    if(/((n*ew\s*[A-Za-z0-9]*[A-Za-z0-9]*\(.*\)))/g.test(line))
+    {
+        if(/((throw*\s*new*\s*\w*Exception*\(.*\)))/g.test(line))
+        {
+             regSpecKeywords=line.match(/((throw*\s*new*\s*\w*Exception*\(.*\)))/g)
+             //console.log(regSpecKeywords);
+             count+=2;
+        }  
+        regSpecKeywords=line.match(/((n*ew\s*[A-Za-z0-9]*[A-Za-z0-9]*\(.*\)))/g)
+        //console.log(regSpecKeywords);
+        count+=2;
+    }
+    else if(/((throws*\s*[^\s]*Exception,*))/g.test(line))
+    {
+        regSpecKeywords=line.match(/((throws*\s*[^\s]*Exception,*))/g)
+        //console.log(regSpecKeywords);
+        count+=2;
+    }   
+    return regSpecKeywords;  
+}
+//Increase count due to class keyword.Increment count for each special keyword by 1
+var countClassWord = (line) => {
+    if (line.includes('class')) {
+        var classKeyword = line.match(/class/g);
+        //console.log(classKeyword);
+        count++;
+        return true;
+    }
+}
+//Increase count due to class keyword.Increment count for each special keyword by 1
+var countNumbers = (line) => {
+    //console.log(line);
+    let regNum = /([+-]?\d+(\.\d)?)/g;;
+    let numbers = line.match(regNum);
+    //console.log(numbers);
+    if (numbers != null) {
+        numbers.forEach(function (element) {
+            //console.log(element);
+            count += 1;
+        });
+        return numbers;
+    }
+}
+//Increase count due to Strings.Increment count for each String by 1
+var countStrings = (line) => {
+    let regString = /("(.*?)")/g;
+    let quotes = line.match(regString);
+    //console.log(quotes);
+    if (quotes != null) {
+        quotes.forEach(function (element) {
+            //console.log(element);
+            count += 1;
+        });
+        return quotes
+    }
+}
+
+//Increase count for each method call.Increment count for each method call by 1
+var findMethodCalls = (line) => {
+      if((/[^\s0-9]([A-Za-z0-9]*[A-Za-z0-9]*)*\(/g).test(line) && (/(\))/g).test(line) && !(/(\)[\s]*{)/g).test(line) )
+      {
+         //console.log("===============Method call====================");
+         //console.log(line);
+         count++;
+      }  
+}
+//Increase count for each method definition.Increment count for each method definition by 1
+var findMethodDefs=(lineArr,index)=>{
+    var methodArr=[]
+    start=index;
+    
+
+    //console.log("===================Method Definition=================");
+    for(var i=start;i<lineArr.length;i++)
+   {    //console.log(lineArr[i])
+        var regexSpace=/\s/g;
+        var res=lineArr[i].match(regexSpace)
+        var closeBSpaceCount=0
+        if(res!=null){
+            closeBSpaceCount=res.length
+        }
+
+        if(lineArr[i].includes("}") && !closeBSpaceCount<1)
+        {       
+            
+            end=i
+            // console.log("End Index: "+end)
+            // console.log("Spaces before }: "+closeBSpaceCount)
+        }else if(closeBSpaceCount<2){
+            break
+        }
+    }
+
+   count++
+//    console.log(start+" || "+end)
+   for(var k=start;k<=end;k++){
+       methodArr.push(lineArr[k])
+   }
+    
+   if(methodArr.length>0){
+    //    console.log("Method Array Length: "+methodArr.length+"\n")
+       mCount+=1
+       //console.log("====================================================================================================\n")
+       //console.log(methodArr+"\n=====================================End Of Method========================================\n")
+       identifyRecursion(methodArr,lineArr,start,end)
+   }
+    
+        
+  
+   start=0
+   end=0
+   methodArr=[]
+}
+
+var complexityBySize = (lineArr) => {
+    initializeRecursionArray(lineArr)
+    mCount=0;
+    //Stores complexity size count for each line in this array
+    
+    var ctc_arr = [];
+    for (i = 0; i < lineArr.length; i++) {
         count = 0;
-        //Increase count due to special keywords
-        for (index = 0; index <= sKeywords; i++) {
-            if (lineArr[i].includes(sKeywords[index])) {
-                // console.log(sKeywords[index]);
-                count += 2;
+        start=0;
+        end=0;
+
+        var line = lineArr[i]
+        var ch = lineArr[i].split('');
+        
+     
+        if((/(\/\/.*[^/s])/g).test(line)== true)
+        {
+           ctc_arr.push(count)   
+           continue
+        }
+        else if( (/(^.+\/\*(.*?)\*\/$)/g).test(line)== true || (/(^\/\*(.*?)\*\/$)/g).test(line)== true)
+        {   
+            ctc_arr.push(count)   
+            continue 
+        }
+        else if((/(\/\*(.*?)$)/g).test(line))
+        {
+            while(i<lineArr.length){
+                ctc_arr.push(count)
+                i++
+                if( (/(^\*\/$)/g).test(lineArr[i])==true || (/(^.+\*\/$)/g).test(lineArr[i])==true ){
+                   break     
+                }   
             }
         }
-        //Increase count due to aritHmetIc operators
-        for (index = 0; index < arithmetic.length; index++) {
-
-            if (lineArr[i].includes(arithmetic[index])) {
-                if (arithmetic[index].length === 2) {
-                    count--;
-                }
-
-                count++;
-            }
+        else 
+        {
+            findMethodCalls(line);
+            countAritmeticOp(ch);
+            countAssignmentOp(ch);
+            countRelationOp(ch); 
+            countLogicalOp(ch);
+            countBitwiseOp(ch);
+            countClassWord(line); 
+            countNumbers(line);
+            countStrings(line);
+            countVariables(line,lineArr);
+            countMethodDefs(line,lineArr,i);
+            countKeywords(line);
+            countSpecKeywords(line);
         }
-        //Increase count due to relational operators
-        for (index = 0; index < relation.length; index++) {
 
-            if (lineArr[i].includes(relation[index])) {
-                if (relation[index].length === 2) {
-                    count--;
-                }
-                count++;
-            }
-        }
-        //Increase count due to Logical operators
-        for (index = 0; index < logical.length; index++) {
-
-            if (lineArr[i].includes(logical[index])) {
-                if (logical[index].length === 2) {
-                    count--;
-                }
-                count++;
-            }
-        }
-        //Increase count due to bitwise operators
-        for (index = 0; index < bitwise.length; index++) {
-
-            if (lineArr[i].includes(bitwise[index])) {
-                if (bitwise[index].length === 2) {
-                    count--;
-                }
-
-                count++;
-            }
-        }
-        //Increase count due to miscellaneous operators
-        for (index = 0; index < misc.length; index++) {
-
-            if (lineArr[i].includes(misc[index])) {
-                if (misc[index].length === 2) {
-                    count--;
-                    if (misc[index].length === 3) {
-                        count--;
-                    }
-                }
-                count++;
-            }
-        }
-        //Increase count due to assignment operators
-        for (index = 0; index < assignment.length; index++) {
-
-            if (lineArr[i].includes(assignment[index])) {
-                if (assignment[index].length === 2) {
-                    count--;
-                    if (assignment[index].length === 3) {
-                        count--;
-                        if (assignment[index].length === 4) {
-                            count--;
-                        }
-                    }
-                }
-
-                count++;
-            }
-        }
-        //Increase count for keywords
-        for (index = 0; index < keywords.length; index++) {
-
-            if (lineArr[i].includes(keywords[index])) {
-                count++;
-            }
-        }
-        //Increase count for number of OOP concepts
-        countOOPConcepts(lineArr[i])
-        ctc_arr.push(count)
-        // console.log(lineArr[i])
+        ctc_arr.push(count)   
     }
-
-    // console.log("Complexity By Size", ctc_arr, ctc_arr.length)
-    return ctc_arr;
+    console.log("\nNumber of Methods: "+mCount)
+    console.log("Complexity By Size Array Length: ", ctc_arr, ctc_arr.length)
+    console.log("\n")
+    return [ctc_arr,complexityByRecursion()];
 };
-module.exports = complexityBySize;
+module.exports ={
+    Cs_Size:complexityBySize,
+    Cs_Classword:countClassWord,
+    Cs_SpecKeywords:countSpecKeywords, 
+    Cs_countNumbers:countNumbers,
+    Cs_countStrings:countStrings, 
+}

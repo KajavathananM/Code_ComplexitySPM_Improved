@@ -80,7 +80,8 @@ var complexityByNested = function (lineArr) {
 
     }
 
-    // console.log("Complexity By Nested", ctc_arr, ctc_arr.length)
+    console.log("Complexity By Nested Array Length: ", ctc_arr, ctc_arr.length)
+    console.log("\n")
     return ctc_arr;
 
 }

@@ -117,7 +117,8 @@ function MethodCom(n, lineArr) {
         MC = p + count1 + 1;
 
     }
-    // console.log("Complexity By Type", ctc_arr, ctc_arr.length)
+    console.log("Complexity By Inheritance Array Length: ", ctc_arr, ctc_arr.length)
+    console.log("\n")
     return MC;
 }
 

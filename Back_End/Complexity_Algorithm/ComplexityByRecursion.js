@@ -1,160 +1,47 @@
 
-var complexityByRecursion = function (lineArr) {
+var ctc_arr = [];
+var count
+var rIndex=0
 
-    var ctc_arr = [];
-    var checkArr = [];
-    var methodName = '';
-    var methodStart = 0;
-    var methodEnd = 0;
-    var isRecursive = false;
+var initializeRecursionArray=(lineArr)=>{
+   count=0
+   for(elem in lineArr){
+      ctc_arr.push(count)
+   } 
+}
+var identifyRecursion=(methodArr,lineArr,start,end)=>{
+   // console.log(start+" || "+end)
+   // console.log(methodArr[0])
+   // console.log(methodArr)
+   for(var k=start;k<=end;k++){
+      // console.log(lineArr[k])
+      if(lineArr[k]==methodArr[1]){
+         rIndex=k
+         break
+      }
+   }
+   var methodName=methodArr[0].match(/([a-zA-Z][a-zA-Z0-9]+\()/g).pop();
+   methodName=methodName.substring(0,methodName.indexOf("("));
+   var i=1;
 
-    var recursiveMethods = [];
-
-    console.log(lineArr.length)
-    for (i = 0; i < lineArr.length; i++) {
-        var count = 0;
-        ctc_arr.push(count)
-
-
-        //check whether line contain any access modifiers
-        if (lineArr[i].includes("public ") || lineArr[i].includes("private ") || lineArr[i].includes("protected ")) {
-
-            //check whether line contain opening and closing brackets
-            if (lineArr[i].includes("(") && lineArr[i].includes(")")) {
-
-                //check whether line doesn't contains any periods
-                if (lineArr[i].indexOf('.') == -1) {
-
-                    //To find start and end of method
-                    checkArr.push('{')
-                    methodStart = i;
-
-                    const charArr = lineArr[i].split('');
-                    const index = lineArr[i].indexOf('(');
-                    var startIndex = 0;
-                    var endIndex = 0;
-
-                    //Loop to find the method name
-                    for (let x = index - 1; x >= 0; x--) {
-
-                        if (x == index - 1) {
-                            if (charArr[x] == ' ')
-                                endIndex = x - 1;
-                            else
-                                endIndex = x;
-                        }
-                        else {
-                            if (charArr[i] == ' ')
-                                startIndex = x + 1;
-                        }
-                    }
-
-                    methodName = lineArr[i].substring(startIndex, (endIndex + 1));
-
-                }
-            }
-        }
-        else {
-            if (checkArr.length != 0) {
-
-                if (lineArr[i].includes(methodName))
-                    isRecursive = true;
-
-                var charArr = lineArr[i].split('');
-
-                //looping through each character
-                for (c = 0; c < charArr.length; c++) {
-
-                    if (charArr[c] == '{')
-                        checkArr.push('{')
-                    else if (charArr[c] == '}') {
-                        if (checkArr.length != 0) {
-                            checkArr.pop()
-
-                            if (checkArr.length == 0) {
-                                methodEnd = i;
-                                recursiveMethods.push({
-                                    startIndex: methodStart,
-                                    endIndex: methodEnd,
-                                    method: methodName,
-                                    recursive: isRecursive
-                                });
-
-                                //Reset
-                                methodName = '';
-                                methodStart = 0;
-                                methodEnd = 0;
-                                isRecursive = false;
-
-                                //break;
-                            }
-
-                        }
-
-                    }
-                }
-
-                if (checkArr.length == 0) {
-                    methodEnd = i;
-                    recursiveMethods.push({
-                        startIndex: methodStart,
-                        endIndex: methodEnd,
-                        method: methodName,
-                        recursive: isRecursive
-                    })
-
-                    //Reset
-                    methodName = '';
-                    methodStart = 0;
-                    methodEnd = 0;
-                    isRecursive = false;
-                    //break;
-                }
-
-            }
-        }
-        
-
-    }
-
-    //Now we have looped once to find the available methods
-    //Let's loop again to check the whether they are fibbinoci
-
-    if (recursiveMethods.length == 0) {
-        console.log("Complexity By Recursion", ctc_arr, ctc_arr.length)
-        return ctc_arr;
-    }
-
-    else {
-        var numRecursive = 0;
-        for (let chk = 0; chk < recursiveMethods.length; chk++) {
-            if (recursiveMethods[chk].recursive) {
-                numRecursive++;
-            }
-        }
-
-        if (numRecursive == 0) {
-            console.log("Complexity By Recursion", ctc_arr, ctc_arr.length)
-            return ctc_arr;
-        }
-
-    }
-
-    //Finally we current Java file has atleast one recursive method
-    for (let chk = 0; chk < recursiveMethods.length; chk++) {
-        if (recursiveMethods[chk].recursive) {
-            var newStart = recursiveMethods[chk].startIndex;
-            var newEnd = recursiveMethods[chk].endIndex;
-
-            for (let rechk = newStart; rechk <= newEnd; rechk++) {
-                ctc_arr[rechk] = 1;
-            }
-        }
-    }
-
-    console.log("Complexity By Recursion", ctc_arr, ctc_arr.length)
-    return ctc_arr;
-
+   // console.log("Recursion Index: "+rIndex)
+   while(i<=methodArr.length-1)
+   {
+      if(methodArr[i].includes(methodName))
+      {
+         //console.log(methodArr[i]);
+         count+=2;
+         // ctc_arr.splice(rIndex,1,count)
+         ctc_arr[rIndex]=count
+      } 
+      i++;
+    }   
 }
 
-module.exports = complexityByRecursion;
+var complexityByRecursion=()=>{
+   console.log("Complexity By Recursion Array Length: ", ctc_arr, ctc_arr.length)
+   console.log("\n")
+   return ctc_arr
+}
+
+module.exports={method1:identifyRecursion, method2:complexityByRecursion,method3:initializeRecursionArray}

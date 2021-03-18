@@ -24,10 +24,10 @@ class FilePondUploader extends Component {
       showAnalysisData: false,
       formatedContent: '',
       Cs: [],
+      Cr:[],
       Ctc: [],
       Cnc: [],
-      Ci: [],
-      Cr:[]
+      Ci: []
 
     };
 
@@ -54,10 +54,10 @@ class FilePondUploader extends Component {
     this.setState({
       formatedContent: fileId.content,
       Cs: fileId.cs,
+      Cr : fileId.cr,
       Ctc: fileId.ctc,
       Cnc: fileId.cnc,
-      Ci: fileId.ci,
-      Cr : fileId.cr
+      Ci: fileId.ci
     })
     // console.log('File added', fileId.cs, fileId.ctc, fileId.cnc, fileId.ci);
 
@@ -149,6 +149,7 @@ class FilePondUploader extends Component {
 
           <Pie_Dragable
             Cs={this.state.Cs}
+            Cr={this.state.Cr}
             Ctc={this.state.Ctc}
             Cnc={this.state.Cnc}
             Ci={this.state.Ci}
@@ -156,6 +157,7 @@ class FilePondUploader extends Component {
 
           <ReChart_Bar
             Cs={this.state.Cs}
+            Cr={this.state.Cr}
             Ctc={this.state.Ctc}
             Cnc={this.state.Cnc}
             Ci={this.state.Ci}
@@ -187,10 +189,10 @@ class FilePondUploader extends Component {
           <TableDisplay
             content={this.state.formatedContent}
             Cs={this.state.Cs}
+            Cr={this.state.Cr} 
             Ctc={this.state.Ctc}
             Cnc={this.state.Cnc}
-            Ci={this.state.Ci}
-            Cr={this.state.Cr} />
+            Ci={this.state.Ci}/>
 
         </div>
       )

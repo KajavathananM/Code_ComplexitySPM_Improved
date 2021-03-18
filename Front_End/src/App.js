@@ -19,7 +19,7 @@ function App() {
           <div className="row">
             <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
               <div className="page-caption">
-                <h1 className="page-title"><big>Code Complexity Measeurer</big></h1>
+                <h1 className="page-title"><big>Code Complexity Measurer</big></h1>
               </div>
             </div>
           </div>

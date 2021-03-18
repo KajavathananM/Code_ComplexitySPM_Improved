@@ -10,6 +10,7 @@ export default class ReChart_Bar extends PureComponent {
         this.state = {
             data: [],
             Cs: props.Cs,
+            Cr: props.Cr,
             Ctc: props.Ctc,
             Cnc: props.Cnc,
             Ci: props.Ci
@@ -24,6 +25,7 @@ export default class ReChart_Bar extends PureComponent {
                 "Complexity_By_Type": this.state.Ctc[i],
                 "Complexity_By_Nested": this.state.Cnc[i],
                 "Complexity_By_Size": this.state.Cs[i],
+                "Complexity_By_Recursion": this.state.Cr[i],
                 "Complexity_By_Inheritence": this.state.Ci[i]
             }
             tempArr.push(tempData);
@@ -39,9 +41,10 @@ export default class ReChart_Bar extends PureComponent {
         const CtcMax = Math.max(...this.state.Ctc);
         const CncMax = Math.max(...this.state.Cnc);
         const CsMax = Math.max(...this.state.Cs);
+        const CrMax = Math.max(...this.state.Cr);
         const CiMax = Math.max(...this.state.Ci);
 
-        const maxAll = Math.max(CtcMax, CncMax, CsMax, CiMax);
+        const maxAll = Math.max(CtcMax, CncMax, CsMax,CrMax, CiMax);
 
         return (
             <div>
@@ -69,6 +72,7 @@ export default class ReChart_Bar extends PureComponent {
                         <Line type="monotone" dataKey="Complexity_By_Type" stroke="#8884d8" height="10" />
                         <Line type="monotone" dataKey="Complexity_By_Nested" stroke="#82ca9d" />
                         <Line type="monotone" dataKey="Complexity_By_Size" stroke="#f56c42" />
+                        <Line type="monotone" dataKey="Complexity_By_Recursion" stroke="#A6503E" />
                         <Line type="monotone" dataKey="Complexity_By_Inheritence" stroke="#6cf542" />
                     </LineChart>
                 </div>

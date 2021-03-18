@@ -9,10 +9,10 @@ class TableDisplay extends Component {
         this.state = {
             content: props.content,
             Cs: props.Cs,
+            Cr : props.Cr,
             Ctc: props.Ctc,
             Cnc: props.Cnc,
-            Ci: props.Ci,
-            Cr : props.Cr
+            Ci: props.Ci
         }
     }
 
@@ -27,6 +27,7 @@ class TableDisplay extends Component {
                     <th scope="row">{i}</th>
                     <td>{line}</td>
                     <td>{this.state.Cs[i-1]}</td>
+                    <td>{this.state.Cr[i-1]}</td>
                     <td>{this.state.Ctc[i-1]}</td>
                     <td>{this.state.Cnc[i-1]}</td>
                     <td>{this.state.Ci[i-1]}</td>
@@ -55,6 +56,7 @@ class TableDisplay extends Component {
                                     <th>#</th>
                                     <th class="col-md-6">Code Segment</th>
                                     <th class="col-md-6">Cs</th>
+                                    <th class="col-md-6">Cr(x2)</th>
                                     <th class="col-md-2">Ctc</th>
                                     <th class="col-md-2">Cnc</th>
                                     <th class="col-md-2">Ci</th>

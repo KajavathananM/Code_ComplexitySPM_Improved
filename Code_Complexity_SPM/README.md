@@ -16,6 +16,8 @@
 </table>
 
 
+<p><b>Technologies:React Js,Node Js,Mocha,Chai,HTML and CSS</b></p>
+
 
 
 

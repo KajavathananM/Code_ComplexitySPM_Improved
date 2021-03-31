@@ -17,7 +17,7 @@
 
 
 <p><b>Technologies:React Js,Node Js,Mocha,Chai,HTML and CSS</b></p>
-
+Run <b>npm start</b> at Front End Folder and <b>node server.js</b> at Back End Folder
 
 
 
